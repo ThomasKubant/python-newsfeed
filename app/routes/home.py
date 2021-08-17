@@ -16,7 +16,10 @@ def index():
 
 @bp.route('/login')
 def login():
-  return render_template('login.html')
+  if session.get('loggedIn') is None:
+    return render_template('login.html')
+
+  return render_template('/dashboard')
 
 @bp.route('/post/<id>')
 def single(id):

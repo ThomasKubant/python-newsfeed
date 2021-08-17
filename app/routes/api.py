@@ -31,3 +31,24 @@ def signup():
     session['loggedIn'] = True
 
     return jsonify(id = newUser.id)
+
+@bp.route('/users/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return '', 204
+
+@bp.route('/users/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    db = get_db()
+    try:
+        user = db.query(User).filter(User.email == data['email']).one()
+        if user.verify_password(data['password']) == False:
+            return jsonify(message = 'Incorrect credentials'), 400
+        session.clear()
+        session['user_id'] = user.id
+        session['loggedIn'] = True
+        return jsonify(id = user.id)
+    except: print(sys.exc_info()[0])
+
+    return jsonify(message = 'Incorrect credentials'), 400
